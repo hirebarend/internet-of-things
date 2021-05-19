@@ -1,6 +1,8 @@
 # Internet Of Things
 
-## What Do I Need?
+## WiFi Enabled Energy Meter
+
+### What Do I Need?
 
 * 1 x [CMU AC Current Sensor Clamp-100A](https://www.communica.co.za/products/cmu-ac-current-sensor-clamp-100a)
 * 1 x 10uF Capacitor
