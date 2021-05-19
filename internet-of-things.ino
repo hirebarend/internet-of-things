@@ -1,8 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-const char *ssid = "Barend";
-const char *password = "0766542813";
+const char *ssid = "SSID";
+const char *password = "PASSWORD";
 
 void setup()
 {
@@ -18,11 +18,6 @@ void setup()
   }
 
   Serial.println(WiFi.localIP());
-
-  if (!sensor.begin())
-  {
-    Serial.println("Failed to connect to sensor");
-  }
 }
 
 void loop()
@@ -36,8 +31,8 @@ void loop()
     return;
   }
 
-  // Wait for 50 seconds
-  for (int i = 0; i < 50 * 2; i++)
+  // Wait for 25 seconds
+  for (int i = 0; i < 25 * 2; i++)
   {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(250);
@@ -45,26 +40,24 @@ void loop()
     delay(250);
   }
 
-  double milliVolts = getMilliVolts();
+  double analogValue = getAnalogValue();
 
-  sendMetric("milliVolts", milliVolts);
+  sendMetric("analogValue", analogValue);
 }
 
-double getMilliVolts() {
+double getAnalogValue() {
   int max = 0;
   
   for (int i = 0 ; i <= 200 ; i++) 
   {
-    int value = analogRead(A1);  
+    int value = analogRead(A0);  
      
     if(value >= max){
       max = value;
     }
   }
-  
-  double milliVolts = (max - 512) * (2500 / 512);
 
-  return milliVolts;
+  return max;
 }
 
 void sendMetric(String name, double value)
