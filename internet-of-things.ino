@@ -1,14 +1,29 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-const char *ssid = "SSID";
-const char *password = "PASSWORD";
+const String deviceId = "xyz";
+
+// const char *ssid = "WR7010-2.4G-82E";
+// const char *password = "12345678";
+
+const char *ssid = "Barend";
+const char *password = "0766542813";
+
+unsigned int count = 0;
+unsigned int interval = 60000;
+unsigned long lastMillis = 0;
+unsigned int sum = 0;
 
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT);
 
   Serial.begin(115200);
+
+  while(!Serial)
+  {
+    delay(1000);
+  }
 
   WiFi.begin(ssid, password);
 
@@ -18,34 +33,39 @@ void setup()
   }
 
   Serial.println(WiFi.localIP());
+
+  lastMillis = millis();
 }
 
 void loop()
 {
-  if (WiFi.status() != WL_CONNECTED)
-  {
-    Serial.println("Not connected to WiFi");
+  if (millis() - lastMillis >= interval) {
+    unsigned long elapsedMillis = millis() - lastMillis;
+    
+    lastMillis = millis();
 
-    delay(3000);
+    unsigned int averageAnalogValue = sum / count;
 
-    return;
+    count = 0;
+    sum = 0;
+
+    sendMetric(deviceId + "_" + "analogValue", averageAnalogValue);
+
+    Serial.println(averageAnalogValue);
   }
+  
+  count += 1;
+  sum += getAnalogValue();
 
-  // Wait for 25 seconds
-  for (int i = 0; i < 25 * 2; i++)
-  {
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(250);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(250);
-  }
-
-  double analogValue = getAnalogValue();
-
-  sendMetric("analogValue", analogValue);
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(500);
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(500);
 }
 
-double getAnalogValue() {
+unsigned int getAnalogValue() {
+  return 512;
+  
   int max = 0;
   
   for (int i = 0 ; i <= 200 ; i++) 
@@ -60,9 +80,9 @@ double getAnalogValue() {
   return max;
 }
 
-void sendMetric(String name, double value)
+void sendMetric(String name, unsigned int value)
 {
-  String host = "https://function-app-977.azurewebsites.net/api/internet-of-things?name=" + name + "&value=" + value;
+  String host = "https://function-app-982.azurewebsites.net/api/metric?name=" + name + "&value=" + value;
   
   WiFiClientSecure wiFiClientSecure;
 
