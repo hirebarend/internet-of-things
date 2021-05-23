@@ -1,13 +1,13 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-const String deviceId = "xyz";
+const String deviceId = "383";
 
-// const char *ssid = "WR7010-2.4G-82E";
-// const char *password = "12345678";
+const char *ssid = "WR7010-2.4G-82E";
+const char *password = "12345678";
 
-const char *ssid = "Barend";
-const char *password = "0766542813";
+// const char *ssid = "Barend";
+// const char *password = "0766542813";
 
 unsigned int count = 0;
 unsigned int interval = 60000;
@@ -38,7 +38,15 @@ void setup()
 }
 
 void loop()
-{
+{  
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(250);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(250);
+  }
+  
   if (millis() - lastMillis >= interval) {
     unsigned long elapsedMillis = millis() - lastMillis;
     
@@ -64,8 +72,6 @@ void loop()
 }
 
 unsigned int getAnalogValue() {
-  return 512;
-  
   int max = 0;
   
   for (int i = 0 ; i <= 200 ; i++) 
@@ -102,4 +108,7 @@ void sendMetric(String name, unsigned int value)
   }
 
   Serial.println(name + " " + value);
+
+  httpClient.end();
+  wiFiClientSecure.stop();
 }
