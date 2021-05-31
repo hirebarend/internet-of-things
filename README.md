@@ -12,3 +12,6 @@
 ### What Do I Need To Do?
 
 [Click Here](https://openenergymonitor.org/forum-archive/node/156.html)
+
+
+![Image](https://octodex.github.com/images/yaktocat.png)
